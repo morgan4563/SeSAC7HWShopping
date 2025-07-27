@@ -20,7 +20,7 @@
 		92E1C22A2E349F8900CCBBC9 /* Exceptions for "SeSAC7HWShopping" folder in "SeSAC7HWShopping" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Resources/Info.plist,
 			);
 			target = 92E1C2172E349F8800CCBBC9 /* SeSAC7HWShopping */;
 		};

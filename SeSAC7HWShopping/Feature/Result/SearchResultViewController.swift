@@ -18,7 +18,7 @@ class SearchResultViewController: UIViewController {
         let deviceWidth = UIScreen.main.bounds.width
         let cellWidth = deviceWidth - (16 * 2) - (16 * 1)
 
-        layout.itemSize = CGSize(width: cellWidth/2, height: cellWidth/2 + 70)
+        layout.itemSize = CGSize(width: cellWidth/2, height: cellWidth/2 + 88)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         layout.scrollDirection = .vertical
 
@@ -49,6 +49,7 @@ class SearchResultViewController: UIViewController {
     private func callRequest(query: String, display: String = "100") {
         let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)"
 
+		#warning("개인키 하드코딩 주의")
         let header: HTTPHeaders = [
             "X-Naver-Client-Id" : "x1oU6MA5QdsSl3AvG56T",
             "X-Naver-Client-Secret" : "UCFzae3V3e"
@@ -109,7 +110,19 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
 
         let item = list.items[indexPath.item]
         if let imageURL = URL(string: item.image) {
-            cell.itemImageView.kf.setImage(with: imageURL)
+            cell.imageView.kf.setImage(with: imageURL)
+        }
+        cell.brandLabel.text = item.brand
+        cell.titleLabel.text = item.title.tagDeleted
+
+        if let price = Int(item.lprice) {
+            let nf = NumberFormatter()
+            nf.numberStyle = .decimal
+
+            let decimalPrice = nf.string(for: price)
+            cell.priceLabel.text = decimalPrice
+        } else {
+            cell.priceLabel.text = item.lprice
         }
 
         return cell
