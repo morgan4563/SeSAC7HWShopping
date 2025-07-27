@@ -85,7 +85,9 @@ extension SearchViewController: ViewDesignProtocol {
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text, text.count >= 2 else {
-            print("텍스트가 2글자 미만입니다.")
+            let alert = UIAlertController(title: "확인 필요", message: "두 글자 이상 입력해주세요", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true)
             return
         }
 
