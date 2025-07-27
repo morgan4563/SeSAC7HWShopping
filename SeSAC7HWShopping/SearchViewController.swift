@@ -22,7 +22,6 @@ class SearchViewController: UIViewController {
         configureHierachy()
         configureLayout()
         configureView()
-        print(1)
     }
 
 
@@ -70,6 +69,7 @@ extension SearchViewController: ViewDesignProtocol {
         navigationController?.navigationBar.tintColor = .white
         searchBar.placeholder = "브랜드, 상품, 프로필, 태그 등"
         searchBar.searchBarStyle = .minimal
+        searchBar.delegate = self
 
         titleImage.contentMode = .scaleAspectFit
         titleImage.image = UIImage(named: "noMoneyMan")
@@ -82,3 +82,14 @@ extension SearchViewController: ViewDesignProtocol {
     }
 }
 
+extension SearchViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text, text.count >= 2 else {
+            print("텍스트가 2글자 미만입니다.")
+            return
+        }
+
+        let vc = SearchResultViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
