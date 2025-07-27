@@ -18,7 +18,7 @@ class SearchResultViewController: UIViewController {
         let deviceWidth = UIScreen.main.bounds.width
         let cellWidth = deviceWidth - (16 * 2) - (16 * 1)
 
-        layout.itemSize = CGSize(width: cellWidth/2, height: cellWidth/2 + 88)
+        layout.itemSize = CGSize(width: cellWidth/2, height: cellWidth/2 + 100)
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         layout.scrollDirection = .vertical
 

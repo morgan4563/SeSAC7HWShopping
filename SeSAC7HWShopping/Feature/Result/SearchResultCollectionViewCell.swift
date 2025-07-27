@@ -82,11 +82,11 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
         mallLabel.font = .systemFont(ofSize: 12, weight: .bold)
         mallLabel.textColor = .systemGray2
 
-        titleLabel.font = .systemFont(ofSize: 14, weight: .bold)
-        titleLabel.textColor = .systemGray4
+        titleLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        titleLabel.textColor = .label
         titleLabel.numberOfLines = 2
 
         priceLabel.font = .systemFont(ofSize: 18, weight: .bold)
-        priceLabel.textColor = .black
+        priceLabel.textColor = .label
     }
 }
