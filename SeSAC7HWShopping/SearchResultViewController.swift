@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import Alamofire
+import Kingfisher
 
 class SearchResultViewController: UIViewController {
     var searchText: String = ""
@@ -25,6 +27,8 @@ class SearchResultViewController: UIViewController {
         return cv
     }()
 
+    var list: SearchItem = SearchItem(items: [])
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,12 +37,35 @@ class SearchResultViewController: UIViewController {
         configureView()
 
         configureCollectionView()
+        callRequest(query: searchText)
     }
 
     private func configureCollectionView() {
         searchItemCollection.delegate = self
         searchItemCollection.dataSource = self
         searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
+    }
+
+    private func callRequest(query: String, display: String = "100") {
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)"
+
+        let header: HTTPHeaders = [
+            "X-Naver-Client-Id" : "x1oU6MA5QdsSl3AvG56T",
+            "X-Naver-Client-Secret" : "UCFzae3V3e"
+        ]
+
+        AF.request(url, method: .get, headers: header)
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: SearchItem.self) { response in
+                switch response.result {
+                case .success(let value):
+                    self.searchResultCountLabel.text = "\(value.items.count) 개의 검색 결과"
+                    self.list = value
+                    self.searchItemCollection.reloadData()
+                case .failure(let error):
+                    print("fail", error)
+                }
+            }
     }
 }
 
@@ -72,7 +99,7 @@ extension SearchResultViewController: ViewDesignProtocol {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return list.items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -80,7 +107,10 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
             return UICollectionViewCell()
         }
 
-        cell.itemImageView.backgroundColor = .red
+        let item = list.items[indexPath.item]
+        if let imageURL = URL(string: item.image) {
+            cell.itemImageView.kf.setImage(with: imageURL)
+        }
 
         return cell
     }
