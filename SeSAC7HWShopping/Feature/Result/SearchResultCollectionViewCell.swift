@@ -12,7 +12,7 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
     static let identifier = "SearchResultCollectionViewCell"
 
     let imageView = UIImageView()
-    let brandLabel = UILabel()
+    let mallLabel = UILabel()
     let titleLabel = UILabel()
     let priceLabel = UILabel()
 
@@ -33,7 +33,7 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
 extension SearchResultCollectionViewCell: ViewDesignProtocol {
     func configureHierachy() {
         contentView.addSubview(imageView)
-        contentView.addSubview(brandLabel)
+        contentView.addSubview(mallLabel)
         contentView.addSubview(titleLabel)
         contentView.addSubview(priceLabel)
     }
@@ -44,21 +44,20 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
             make.height.equalTo(imageView.snp.width)
         }
 
-        brandLabel.snp.makeConstraints { make in
+        mallLabel.snp.makeConstraints { make in
             make.top.equalTo(imageView.snp.bottom).offset(4)
             make.horizontalEdges.equalTo(contentView).inset(8)
         }
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(brandLabel.snp.bottom).offset(6)
-            make.horizontalEdges.equalTo(brandLabel)
+            make.top.equalTo(mallLabel.snp.bottom).offset(6)
+            make.horizontalEdges.equalTo(mallLabel)
         }
 
         priceLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.horizontalEdges.equalTo(brandLabel)
+            make.horizontalEdges.equalTo(mallLabel)
         }
-
     }
     
     func configureView() {
@@ -67,8 +66,8 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .blue
 
-        brandLabel.font = .systemFont(ofSize: 12, weight: .bold)
-        brandLabel.textColor = .systemGray4
+        mallLabel.font = .systemFont(ofSize: 12, weight: .bold)
+        mallLabel.textColor = .systemGray4
 
         titleLabel.font = .systemFont(ofSize: 13, weight: .bold)
         titleLabel.textColor = .systemGray5

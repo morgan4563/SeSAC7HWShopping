@@ -112,7 +112,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         if let imageURL = URL(string: item.image) {
             cell.imageView.kf.setImage(with: imageURL)
         }
-        cell.brandLabel.text = item.brand
+        cell.mallLabel.text = item.mallName
         cell.titleLabel.text = item.title.tagDeleted
 
         if let price = Int(item.lprice) {
