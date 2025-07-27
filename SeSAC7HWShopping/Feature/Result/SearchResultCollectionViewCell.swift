@@ -15,6 +15,7 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
     let mallLabel = UILabel()
     let titleLabel = UILabel()
     let priceLabel = UILabel()
+    let heartButton = UIButton()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -33,6 +34,7 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
 extension SearchResultCollectionViewCell: ViewDesignProtocol {
     func configureHierachy() {
         contentView.addSubview(imageView)
+        contentView.addSubview(heartButton)
         contentView.addSubview(mallLabel)
         contentView.addSubview(titleLabel)
         contentView.addSubview(priceLabel)
@@ -42,6 +44,11 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
         imageView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(imageView.snp.width)
+        }
+
+        heartButton.snp.makeConstraints { make in
+            make.bottom.trailing.equalTo(imageView).inset(8)
+            make.size.equalTo(32)
         }
 
         mallLabel.snp.makeConstraints { make in
@@ -66,11 +73,17 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = .blue
 
-        mallLabel.font = .systemFont(ofSize: 12, weight: .bold)
-        mallLabel.textColor = .systemGray4
+        heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        heartButton.tintColor = .black
+        heartButton.backgroundColor = .white
+        heartButton.layer.cornerRadius = 16
+        heartButton.clipsToBounds = true
 
-        titleLabel.font = .systemFont(ofSize: 13, weight: .bold)
-        titleLabel.textColor = .systemGray5
+        mallLabel.font = .systemFont(ofSize: 12, weight: .bold)
+        mallLabel.textColor = .systemGray2
+
+        titleLabel.font = .systemFont(ofSize: 14, weight: .bold)
+        titleLabel.textColor = .systemGray4
         titleLabel.numberOfLines = 2
 
         priceLabel.font = .systemFont(ofSize: 18, weight: .bold)
