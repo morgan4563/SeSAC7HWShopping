@@ -7,7 +7,6 @@
 
 import UIKit
 import SnapKit
-import Alamofire
 import Kingfisher
 
 class SearchResultViewController: UIViewController {
@@ -48,9 +47,9 @@ class SearchResultViewController: UIViewController {
         case "가격낮은순":
             sort = "asc"
         default:
-			sort = "sim"
+            sort = "sim"
         }
-		resetViewData()
+        resetViewData()
         callRequest(query: searchText, sort: sort)
     }
 
@@ -94,39 +93,29 @@ class SearchResultViewController: UIViewController {
     }
 
     private func callRequest(query: String, display: String = "30", sort: String = "sim", start: Int = 1) {
-        if isEnd {
-            return
-        }
+        if isEnd { return }
 
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)&sort=\(sort)&start=\(start)"
+        NetworkManager.shared.callRequest(query: query, display: display, sort: sort, start: start) {
+            [weak self] result in
+            guard let self else { return }
 
-		#warning("개인키 하드코딩 주의")
-        let header: HTTPHeaders = [
-            "X-Naver-Client-Id" : "x1oU6MA5QdsSl3AvG56T",
-            "X-Naver-Client-Secret" : "UCFzae3V3e"
-        ]
-
-        AF.request(url, method: .get, headers: header)
-            .validate(statusCode: 200..<300)
-            .responseDecodable(of: SearchItem.self) { response in
-                switch response.result {
-                case .success(let value):
-                    // display가 30이라 "/30"으로 설정됨, 코드 개선 필요
-                    if start > 100 || start > Int(ceil(Double(value.total) / Double(30))) {
-                        self.isEnd = true
-                    }
-
-                    self.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
-                    self.list.items.append(contentsOf: value.items)
-                    self.searchItemCollection.reloadData()
-
-                    if self.start == 1 {
-                        self.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
-                    }
-                case .failure(let error):
-                    print("fail", error)
+            switch result {
+            case .success(let value):
+                if start > 100 || start > Int(ceil(Double(value.total) / Double(30))) {
+                    self.isEnd = true
                 }
+
+                self.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
+                self.list.items.append(contentsOf: value.items)
+                self.searchItemCollection.reloadData()
+
+                if self.start == 1 {
+                    self.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+                }
+            case .failure(let error):
+                print("fail", error)
             }
+        }
     }
 }
 
@@ -136,7 +125,7 @@ extension SearchResultViewController: ViewDesignProtocol {
         view.addSubview(filterButtonsStackView)
         view.addSubview(searchItemCollection)
     }
-    
+
     func configureLayout() {
         searchResultCountLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -153,7 +142,7 @@ extension SearchResultViewController: ViewDesignProtocol {
             make.horizontalEdges.bottom.equalToSuperview()
         }
     }
-    
+
     func configureView() {
         view.backgroundColor = .systemBackground
         title = searchText
@@ -174,7 +163,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return list.items.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCollectionViewCell.identifier, for: indexPath) as? SearchResultCollectionViewCell else {
             return UICollectionViewCell()
