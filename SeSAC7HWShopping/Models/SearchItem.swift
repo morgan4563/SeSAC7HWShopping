@@ -9,7 +9,8 @@ import Foundation
 
 struct SearchItem: Decodable {
     let total: Int
-    let items: [Item]
+    let start: Int
+    var items: [Item]
 }
 
 struct Item: Decodable {

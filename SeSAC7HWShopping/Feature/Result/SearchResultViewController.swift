@@ -12,6 +12,11 @@ import Kingfisher
 
 class SearchResultViewController: UIViewController {
     var searchText: String = ""
+    var list: SearchItem = SearchItem(total: 0, start: 1, items: [])
+
+    var start = 1
+    var isEnd = false
+
     let searchResultCountLabel = UILabel()
     let filterButtonsStackView: UIStackView = {
         let buttons = ["정확도","날짜순","가격높은순","가격낮은순"].map {
@@ -46,6 +51,7 @@ class SearchResultViewController: UIViewController {
         default:
 			sort = "sim"
         }
+		resetViewData()
         callRequest(query: searchText, sort: sort)
     }
 
@@ -63,8 +69,6 @@ class SearchResultViewController: UIViewController {
         return cv
     }()
 
-    var list: SearchItem = SearchItem(total: 0, items: [])
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -72,8 +76,16 @@ class SearchResultViewController: UIViewController {
         configureLayout()
         configureView()
 
+        resetViewData()
         configureCollectionView()
         callRequest(query: searchText)
+    }
+
+    private func resetViewData() {
+        start = 1
+        isEnd = false
+        list = SearchItem(total: 0, start: 1, items: [])
+        searchItemCollection.reloadData()
     }
 
     private func configureCollectionView() {
@@ -82,8 +94,12 @@ class SearchResultViewController: UIViewController {
         searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
     }
 
-    private func callRequest(query: String, display: String = "100", sort: String = "sim") {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)&sort=\(sort)"
+    private func callRequest(query: String, display: String = "30", sort: String = "sim", start: Int = 1) {
+        if isEnd {
+            return
+        }
+
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)&sort=\(sort)&start=\(start)"
 
 		#warning("개인키 하드코딩 주의")
         let header: HTTPHeaders = [
@@ -96,9 +112,18 @@ class SearchResultViewController: UIViewController {
             .responseDecodable(of: SearchItem.self) { response in
                 switch response.result {
                 case .success(let value):
+                    // display가 30이라 "/30"으로 설정됨, 코드 개선 필요
+                    if start > 100 || start > Int(ceil(Double(value.total) / Double(30))) {
+                        self.isEnd = true
+                    }
+
                     self.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
-                    self.list = value
+                    self.list.items.append(contentsOf: value.items)
                     self.searchItemCollection.reloadData()
+
+                    if self.start == 1 {
+                        self.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+                    }
                 case .failure(let error):
                     print("fail", error)
                 }
@@ -168,5 +193,12 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         }
 
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.item == list.items.count - 3 && isEnd == false {
+            start += 1
+            callRequest(query: searchText, start: start)
+        }
     }
 }
