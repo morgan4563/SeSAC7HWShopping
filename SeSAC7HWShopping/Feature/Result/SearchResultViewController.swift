@@ -27,7 +27,7 @@ class SearchResultViewController: UIViewController {
         return cv
     }()
 
-    var list: SearchItem = SearchItem(items: [])
+    var list: SearchItem = SearchItem(total: 0, items: [])
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +60,7 @@ class SearchResultViewController: UIViewController {
             .responseDecodable(of: SearchItem.self) { response in
                 switch response.result {
                 case .success(let value):
-                    self.searchResultCountLabel.text = "\(value.items.count) 개의 검색 결과"
+                    self.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
                     self.list = value
                     self.searchItemCollection.reloadData()
                 case .failure(let error):

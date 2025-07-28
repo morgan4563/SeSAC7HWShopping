@@ -8,6 +8,7 @@
 import Foundation
 
 struct SearchItem: Decodable {
+    let total: Int
     let items: [Item]
 }
 
