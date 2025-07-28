@@ -23,8 +23,6 @@ class SearchViewController: UIViewController {
         configureLayout()
         configureView()
     }
-
-
 }
 
 extension SearchViewController: ViewDesignProtocol {

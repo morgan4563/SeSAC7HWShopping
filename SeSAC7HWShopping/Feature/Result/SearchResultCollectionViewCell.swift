@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class SearchResultCollectionViewCell: UICollectionViewCell {
+class SearchResultCollectionViewCell: BaseCollectionViewCell {
     static let identifier = "SearchResultCollectionViewCell"
 
     let imageView = UIImageView()
@@ -17,30 +17,15 @@ class SearchResultCollectionViewCell: UICollectionViewCell {
     let priceLabel = UILabel()
     let heartButton = UIButton()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-		configureHierachy()
-        configureLayout()
-        configureView()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        fatalError("스토리보드로 사용됨 에러")
-    }
-}
-
-extension SearchResultCollectionViewCell: ViewDesignProtocol {
-    func configureHierachy() {
+    override func configureHierachy() {
         contentView.addSubview(imageView)
         contentView.addSubview(heartButton)
         contentView.addSubview(mallLabel)
         contentView.addSubview(titleLabel)
         contentView.addSubview(priceLabel)
     }
-    
-    func configureLayout() {
+
+    override func configureLayout() {
         imageView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.height.equalTo(imageView.snp.width)
@@ -66,8 +51,8 @@ extension SearchResultCollectionViewCell: ViewDesignProtocol {
             make.horizontalEdges.equalTo(mallLabel)
         }
     }
-    
-    func configureView() {
+
+    override func configureView() {
         imageView.layer.cornerRadius = 5
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
