@@ -188,10 +188,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
         cell.titleLabel.text = item.title.tagDeleted
 
         if let price = Int(item.lprice) {
-            let nf = NumberFormatter()
-            nf.numberStyle = .decimal
-
-            let decimalPrice = nf.string(for: price)
+            let decimalPrice = PriceFormatter.shared.formatter.string(for: price)
             cell.priceLabel.text = decimalPrice
         } else {
             cell.priceLabel.text = item.lprice
