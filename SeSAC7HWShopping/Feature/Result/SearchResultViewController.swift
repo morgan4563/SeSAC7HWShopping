@@ -73,6 +73,12 @@ class SearchResultViewController: UIViewController {
                 }
             case .failure(let error):
                 print("fail", error)
+                let alert = UIAlertController(title: "네트워크 에러", message: "요청에 실패했습니다. 검색어를 다시 입력해 주세요", preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default) {_ in 
+                    self.navigationController?.popViewController(animated: true)
+                }
+                alert.addAction(confirm)
+                present(alert, animated: true)
             }
         }
     }
