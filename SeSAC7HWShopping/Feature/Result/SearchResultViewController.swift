@@ -28,7 +28,6 @@ class SearchResultViewController: UIViewController {
             button.layer.cornerRadius = 8
             button.layer.borderWidth = 1
 
-            button.addTarget(self, action: #selector(filterButtonClicked(_:)), for: .touchUpInside)
             return button
         }
         let sv = UIStackView(arrangedSubviews: buttons)
@@ -162,6 +161,12 @@ extension SearchResultViewController: ViewDesignProtocol {
         searchResultCountLabel.font = .systemFont(ofSize: 15, weight: .semibold)
         searchResultCountLabel.textColor = .green
         searchResultCountLabel.text = "12,235,1243 개의 검색 결과"
+
+        filterButtonsStackView.arrangedSubviews.forEach {
+            if let button = $0 as? UIButton {
+                button.addTarget(self, action: #selector(filterButtonClicked(_:)), for: .touchUpInside)
+            }
+        }
     }
 }
 
