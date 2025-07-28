@@ -13,6 +13,25 @@ import Kingfisher
 class SearchResultViewController: UIViewController {
     var searchText: String = ""
     let searchResultCountLabel = UILabel()
+    let filterButtonsStackView: UIStackView = {
+        let buttons = ["정확도","날짜순","가격높은순","가격낮은순"].map {
+            let button = UIButton(type: .system)
+            button.setTitle($0, for: .normal)
+            button.titleLabel?.font = .systemFont(ofSize: 17)
+            button.setTitleColor(.label, for: .normal)
+
+            button.layer.cornerRadius = 8
+            button.layer.borderWidth = 1
+
+            return button
+        }
+        let sv = UIStackView(arrangedSubviews: buttons)
+        sv.axis = .horizontal
+        sv.distribution = .fillProportionally
+        sv.spacing = 8
+        return sv
+    }()
+
     let searchItemCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let deviceWidth = UIScreen.main.bounds.width
@@ -73,6 +92,7 @@ class SearchResultViewController: UIViewController {
 extension SearchResultViewController: ViewDesignProtocol {
     func configureHierachy() {
         view.addSubview(searchResultCountLabel)
+        view.addSubview(filterButtonsStackView)
         view.addSubview(searchItemCollection)
     }
     
@@ -82,8 +102,13 @@ extension SearchResultViewController: ViewDesignProtocol {
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(22)
         }
-        searchItemCollection.snp.makeConstraints { make in
+        filterButtonsStackView.snp.makeConstraints { make in
             make.top.equalTo(searchResultCountLabel.snp.bottom).offset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(44)
+        }
+        searchItemCollection.snp.makeConstraints { make in
+            make.top.equalTo(filterButtonsStackView.snp.bottom).offset(16)
             make.horizontalEdges.bottom.equalToSuperview()
         }
     }

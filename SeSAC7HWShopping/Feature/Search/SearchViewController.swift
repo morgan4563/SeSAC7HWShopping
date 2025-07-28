@@ -65,8 +65,10 @@ extension SearchViewController: ViewDesignProtocol {
     
     func configureView() {
         view.backgroundColor = .systemBackground
-        title = "영캠러의 쇼핑쇼핑"
+        mainContainerView.backgroundColor = .systemBackground
         navigationController?.navigationBar.tintColor = .label
+        
+        title = "영캠러의 쇼핑쇼핑"
 
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
 
