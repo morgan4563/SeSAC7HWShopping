@@ -23,6 +23,7 @@ class SearchResultViewController: UIViewController {
             button.layer.cornerRadius = 8
             button.layer.borderWidth = 1
 
+            button.addTarget(self, action: #selector(filterButtonClicked(_:)), for: .touchUpInside)
             return button
         }
         let sv = UIStackView(arrangedSubviews: buttons)
@@ -31,6 +32,22 @@ class SearchResultViewController: UIViewController {
         sv.spacing = 8
         return sv
     }()
+
+    @objc func filterButtonClicked(_ sender: UIButton) {
+        guard let title = sender.currentTitle else { return }
+        let sort: String
+        switch title {
+        case "날짜순":
+            sort = "date"
+        case "가격높은순":
+            sort = "dsc"
+        case "가격낮은순":
+            sort = "asc"
+        default:
+			sort = "sim"
+        }
+        callRequest(query: searchText, sort: sort)
+    }
 
     let searchItemCollection: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -65,8 +82,8 @@ class SearchResultViewController: UIViewController {
         searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
     }
 
-    private func callRequest(query: String, display: String = "100") {
-        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)"
+    private func callRequest(query: String, display: String = "100", sort: String = "sim") {
+        let url = "https://openapi.naver.com/v1/search/shop.json?query=\(query)&display=\(display)&sort=\(sort)"
 
 		#warning("개인키 하드코딩 주의")
         let header: HTTPHeaders = [
