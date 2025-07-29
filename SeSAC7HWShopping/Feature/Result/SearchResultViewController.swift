@@ -68,6 +68,7 @@ class SearchResultViewController: UIViewController {
             [weak self] result in
             guard let self else { return }
 
+
             switch result {
             case .success(let value):
                 self.searchResultView.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
@@ -81,9 +82,30 @@ class SearchResultViewController: UIViewController {
                     self.searchResultView.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
                 }
             case .failure(let error):
-                print("fail", error)
-                let alert = UIAlertController(title: "네트워크 에러", message: "요청에 실패했습니다. 검색어를 다시 입력해 주세요", preferredStyle: .alert)
-                let confirm = UIAlertAction(title: "확인", style: .default) {_ in 
+                var msg = "요청에 실패했습니다. 검색어를 다시 입력해 주세요"
+                if let nw = error as? NWError {
+                    switch nw {
+                    case .naver(let code):
+                        switch code {
+                        case "SE01":
+							msg = "잘못된 쿼리 요청입니다"
+                        case "SE02":
+                            msg = "부적절한 display 값입니다."
+                        case "SE03":
+                            msg = "부적절한 start 값입니다."
+                        case "SE04":
+                            msg = "부적절한 sort 값입니다."
+                        case "SE06":
+                            msg = "잘못된 형식의 인코딩입니다."
+                        case "SE05":
+                            msg = "존재하지 않는 검색 api 입니다."
+                        default:
+                            break
+                        }
+                    }
+                }
+                let alert = UIAlertController(title: "네트워크 에러", message: msg, preferredStyle: .alert)
+                let confirm = UIAlertAction(title: "확인", style: .default) {_ in
                     self.navigationController?.popViewController(animated: true)
                 }
                 alert.addAction(confirm)
