@@ -72,7 +72,7 @@ class SearchResultViewController: UIViewController {
 
                 self.searchResultView.searchItemCollection.reloadData()
 
-                if self.start == 1 {
+                if self.start == 1 && !isEnd {
                     self.searchResultView.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
                 }
             case .failure(let error):
