@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		924048002E389F7700A638F0 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 924047FF2E389F7700A638F0 /* .gitignore */; };
 		929D51F52E350669005E4701 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 929D51F42E350669005E4701 /* SnapKit */; };
 		929D53322E367AFC005E4701 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 929D53312E367AFC005E4701 /* Alamofire */; };
 		929D53372E367E55005E4701 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 929D53362E367E55005E4701 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		924047FF2E389F7700A638F0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		92E1C2182E349F8800CCBBC9 /* SeSAC7HWShopping.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeSAC7HWShopping.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -54,6 +56,7 @@
 		92E1C20F2E349F8700CCBBC9 = {
 			isa = PBXGroup;
 			children = (
+				924047FF2E389F7700A638F0 /* .gitignore */,
 				92E1C21A2E349F8800CCBBC9 /* SeSAC7HWShopping */,
 				92E1C2192E349F8800CCBBC9 /* Products */,
 			);
@@ -139,6 +142,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				924048002E389F7700A638F0 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

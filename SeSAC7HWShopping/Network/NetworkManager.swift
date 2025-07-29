@@ -23,10 +23,9 @@ class NetworkManager {
             "start" : String(start)
         ]
 
-        #warning("개인키 하드코딩 주의")
         let header: HTTPHeaders = [
-            "X-Naver-Client-Id" : "x1oU6MA5QdsSl3AvG56T",
-            "X-Naver-Client-Secret" : "UCFzae3V3e"
+            "X-Naver-Client-Id" : APIKey.naverID,
+            "X-Naver-Client-Secret" : APIKey.naverSecret
         ]
 
         AF.request(url, method: .get, parameters: parameters, headers: header)
