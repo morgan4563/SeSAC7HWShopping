@@ -44,10 +44,25 @@ class SearchResultView: BaseView {
         return cv
     }()
 
+    let searchRecommendCollection: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        let deviceWidth = UIScreen.main.bounds.width
+        let cellWidth = deviceWidth - (8 * 2) - (8 * 3)
+
+        layout.itemSize = CGSize(width: cellWidth/4, height: cellWidth/4)
+        layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        layout.scrollDirection = .horizontal
+
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+
+		return cv
+    }()
+
     override func configureHierachy() {
         addSubview(searchResultCountLabel)
         addSubview(filterButtonsStackView)
         addSubview(searchItemCollection)
+        addSubview(searchRecommendCollection)
     }
 
     override func configureLayout() {
@@ -63,7 +78,12 @@ class SearchResultView: BaseView {
         }
         searchItemCollection.snp.makeConstraints { make in
             make.top.equalTo(filterButtonsStackView.snp.bottom).offset(16)
+            make.horizontalEdges.equalToSuperview()
+        }
+        searchRecommendCollection.snp.makeConstraints { make in
+            make.top.equalTo(searchItemCollection.snp.bottom)
             make.horizontalEdges.bottom.equalToSuperview()
+            make.height.equalTo(100)
         }
     }
 

@@ -14,6 +14,7 @@ class SearchResultViewController: UIViewController {
 
     var searchText: String = ""
     var list: SearchItem = SearchItem(total: 0, start: 1, items: [])
+    var recommendList: SearchItem = SearchItem(total: 0, start: 1, items: [])
     var start = 1
     var displayCountString = "30"
     var isEnd = false
@@ -49,7 +50,11 @@ class SearchResultViewController: UIViewController {
     private func configureCollectionView() {
         searchResultView.searchItemCollection.delegate = self
         searchResultView.searchItemCollection.dataSource = self
-        searchResultView.searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
+        searchResultView.searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: SearchResultCollectionViewCell.identifier)
+
+        searchResultView.searchRecommendCollection.delegate = self
+        searchResultView.searchRecommendCollection.dataSource = self
+        searchResultView.searchRecommendCollection.register(SearchResultRecommendCollectionViewCell.self, forCellWithReuseIdentifier: SearchResultRecommendCollectionViewCell.identifier)
     }
 
     private func callRequest(query: String, display: String, sort: String = "sim") {
@@ -85,6 +90,19 @@ class SearchResultViewController: UIViewController {
                 present(alert, animated: true)
             }
         }
+
+        NetworkManager.shared.callRequest(query: "새싹", display: "10") {
+            [weak self] result in
+            guard let self else { return }
+
+            switch result {
+            case .success(let value):
+                self.recommendList.items = value.items
+                self.searchResultView.searchRecommendCollection.reloadData()
+            case .failure(let error):
+                print("fail", error)
+            }
+        }
     }
 
     @objc func filterButtonClicked(_ sender: UIButton) {
@@ -107,30 +125,48 @@ class SearchResultViewController: UIViewController {
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return list.items.count
+        if collectionView == searchResultView.searchItemCollection {
+            return list.items.count
+        } else {
+            return recommendList.items.count
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCollectionViewCell.identifier, for: indexPath) as? SearchResultCollectionViewCell else {
-            return UICollectionViewCell()
-        }
+        if collectionView == searchResultView.searchItemCollection {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultCollectionViewCell.identifier, for: indexPath) as? SearchResultCollectionViewCell else {
+                return UICollectionViewCell()
+            }
 
-        let item = list.items[indexPath.item]
-        if let imageURL = URL(string: item.image) {
-            cell.imageView.kf.setImage(with: imageURL)
-        }
-        cell.mallLabel.text = item.mallName
-        cell.titleLabel.text = item.title.tagDeleted
+            let item = list.items[indexPath.item]
+            if let imageURL = URL(string: item.image) {
+                cell.imageView.kf.setImage(with: imageURL)
+            }
+            cell.mallLabel.text = item.mallName
+            cell.titleLabel.text = item.title.tagDeleted
 
-        if let price = Int(item.lprice) {
-            let decimalPrice = PriceFormatter.shared.formatter.string(for: price)
-            cell.priceLabel.text = decimalPrice
+            if let price = Int(item.lprice) {
+                let decimalPrice = PriceFormatter.shared.formatter.string(for: price)
+                cell.priceLabel.text = decimalPrice
+            } else {
+                cell.priceLabel.text = item.lprice
+            }
+
+            return cell
         } else {
-            cell.priceLabel.text = item.lprice
-        }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchResultRecommendCollectionViewCell.identifier, for: indexPath) as? SearchResultRecommendCollectionViewCell else {
+                return UICollectionViewCell()
+            }
 
-        return cell
+            let item = recommendList.items[indexPath.item]
+            if let imageURL = URL(string: item.image) {
+                cell.imageView.kf.setImage(with: imageURL)
+            }
+
+            return cell
+        }
     }
+
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         print(#function, indexPath.item, isEnd, list.items.count)
