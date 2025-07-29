@@ -15,6 +15,7 @@ class SearchResultViewController: UIViewController {
     var searchText: String = ""
     var list: SearchItem = SearchItem(total: 0, start: 1, items: [])
     var start = 1
+    var displayCountString = "30"
     var isEnd = false
 
     override func loadView() {
@@ -25,7 +26,7 @@ class SearchResultViewController: UIViewController {
         super.viewDidLoad()
         resetViewData()
         configureCollectionView()
-        callRequest(query: searchText)
+        callRequest(query: searchText, display: displayCountString)
 
         //네비게이션 설정
         title = searchText
@@ -51,7 +52,11 @@ class SearchResultViewController: UIViewController {
         searchResultView.searchItemCollection.register(SearchResultCollectionViewCell.self, forCellWithReuseIdentifier: "SearchResultCollectionViewCell")
     }
 
-    private func callRequest(query: String, display: String = "30", sort: String = "sim", start: Int = 1) {
+    private func callRequest(query: String, display: String, sort: String = "sim") {
+        if start > 1000 {
+            self.isEnd = true
+        }
+
         if isEnd { return }
 
         NetworkManager.shared.callRequest(query: query, display: display, sort: sort, start: start) {
@@ -60,12 +65,11 @@ class SearchResultViewController: UIViewController {
 
             switch result {
             case .success(let value):
-                if start > 100 || start > Int(ceil(Double(value.total) / Double(30))) {
-                    self.isEnd = true
-                }
-
                 self.searchResultView.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
                 self.list.items.append(contentsOf: value.items)
+                let maxTotal = min(value.total, 1000)
+                isEnd = list.items.count >= maxTotal || value.items.count == 0
+
                 self.searchResultView.searchItemCollection.reloadData()
 
                 if self.start == 1 {
@@ -97,7 +101,7 @@ class SearchResultViewController: UIViewController {
             sort = "sim"
         }
         resetViewData()
-        callRequest(query: searchText, sort: sort)
+        callRequest(query: searchText, display: displayCountString, sort: sort)
     }
 }
 
@@ -129,9 +133,11 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == list.items.count - 3 && isEnd == false {
-            start += 1
-            callRequest(query: searchText, start: start)
+        print(#function, indexPath.item, isEnd, list.items.count)
+        if isEnd == false && indexPath.item == list.items.count - 3 {
+            print(1)
+            start += Int(displayCountString)!
+            callRequest(query: searchText, display: displayCountString)
         }
     }
 }
