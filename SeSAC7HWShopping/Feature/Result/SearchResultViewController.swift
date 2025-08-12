@@ -9,14 +9,8 @@ import UIKit
 import Kingfisher
 
 class SearchResultViewController: UIViewController {
+    let viewModel = SearchResultViewModel()
     let searchResultView = SearchResultView()
-
-    var searchText: String? = ""
-    var list: SearchItem = SearchItem(total: 0, start: 1, items: [])
-    var recommendList: SearchItem = SearchItem(total: 0, start: 1, items: [])
-    var start = 1
-    var displayCountString = "30"
-    var isEnd = false
 
     override func loadView() {
         view = searchResultView
@@ -26,10 +20,7 @@ class SearchResultViewController: UIViewController {
         super.viewDidLoad()
         resetViewData()
         configureCollectionView()
-        callRequest(query: searchText, display: displayCountString)
-
-        //네비게이션 설정
-        title = searchText
+        bind()
 
         //버튼 세팅
         searchResultView.filterButtonsStackView.arrangedSubviews.forEach {
@@ -39,11 +30,28 @@ class SearchResultViewController: UIViewController {
         }
     }
 
+    private func bind() {
+        viewModel.outputTitleText.bind { [weak self] _ in
+            guard let self else { return }
+            self.navigationItem.title = self.viewModel.outputTitleText.value
+            self.callRequest(query: viewModel.outputTitleText.value, display: "100")
+        }
+
+        viewModel.list.bind { [weak self] _ in
+            guard let self else { return }
+            searchResultView.searchItemCollection.reloadData()
+        }
+
+        viewModel.recommendList.bind { [weak self] _ in
+            guard let self else { return }
+            searchResultView.searchRecommendCollection.reloadData()
+        }
+    }
+
     private func resetViewData() {
-        start = 1
-        isEnd = false
-        list = SearchItem(total: 0, start: 1, items: [])
-        searchResultView.searchItemCollection.reloadData()
+        viewModel.start = 1
+        viewModel.isEnd = false
+        viewModel.list.value = SearchItem(total: 0, start: 1, items: [])
     }
 
     private func configureCollectionView() {
@@ -57,27 +65,26 @@ class SearchResultViewController: UIViewController {
     }
 
     private func callRequest(query: String, display: String, sort: String = "sim") {
-        if start > 1000 {
-            self.isEnd = true
+        if viewModel.start > 1000 {
+            viewModel.isEnd = true
         }
 
-        if isEnd { return }
+        if viewModel.isEnd { return }
 
-        NetworkManager.shared.callRequest(query: query, display: display, sort: sort, start: start) {
+        NetworkManager.shared.callRequest(query: query, display: display, sort: sort, start: viewModel.start) {
             [weak self] result in
             guard let self else { return }
-
 
             switch result {
             case .success(let value):
                 self.searchResultView.searchResultCountLabel.text = "\(value.total.formatted()) 개의 검색 결과"
-                self.list.items.append(contentsOf: value.items)
+
                 let maxTotal = min(value.total, 1000)
-                isEnd = list.items.count >= maxTotal || value.items.count == 0
+                viewModel.isEnd = viewModel.list.value.items.count + value.items.count >= maxTotal || value.items.count == 0
 
-                self.searchResultView.searchItemCollection.reloadData()
+                viewModel.list.value.items.append(contentsOf: value.items)
 
-                if self.start == 1 && !isEnd {
+                if viewModel.start == 1 && !viewModel.isEnd {
                     self.searchResultView.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
                 }
             case .failure(let error):
@@ -118,8 +125,7 @@ class SearchResultViewController: UIViewController {
 
             switch result {
             case .success(let value):
-                self.recommendList.items = value.items
-                self.searchResultView.searchRecommendCollection.reloadData()
+                viewModel.recommendList.value.items = value.items
             case .failure(let error):
                 print("fail", error)
             }
@@ -140,16 +146,16 @@ class SearchResultViewController: UIViewController {
             sort = "sim"
         }
         resetViewData()
-        callRequest(query: searchText, display: displayCountString, sort: sort)
+        callRequest(query: viewModel.outputTitleText.value, display: "100", sort: sort)
     }
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == searchResultView.searchItemCollection {
-            return list.items.count
+            return viewModel.list.value.items.count
         } else {
-            return recommendList.items.count
+            return viewModel.recommendList.value.items.count
         }
     }
 
@@ -159,7 +165,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
                 return UICollectionViewCell()
             }
 
-            let item = list.items[indexPath.item]
+            let item = viewModel.list.value.items[indexPath.item]
             if let imageURL = URL(string: item.image) {
                 cell.imageView.kf.setImage(with: imageURL)
             }
@@ -179,7 +185,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
                 return UICollectionViewCell()
             }
 
-            let item = recommendList.items[indexPath.item]
+            let item = viewModel.recommendList.value.items[indexPath.item]
             if let imageURL = URL(string: item.image) {
                 cell.imageView.kf.setImage(with: imageURL)
             }
@@ -190,11 +196,9 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
 
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        print(#function, indexPath.item, isEnd, list.items.count)
-        if isEnd == false && indexPath.item == list.items.count - 3 {
-            print(1)
-            start += Int(displayCountString)!
-            callRequest(query: searchText, display: displayCountString)
+        if viewModel.isEnd == false && indexPath.item == viewModel.list.value.items.count - 3 {
+            viewModel.start += Int(viewModel.displayCountString)!
+            callRequest(query: viewModel.inputTitleText.value ?? "", display: viewModel.displayCountString)
         }
     }
 }

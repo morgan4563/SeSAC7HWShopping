@@ -31,7 +31,8 @@ final class SearchViewController: UIViewController {
     }
 
     private func bind() {
-        viewModel.outputTextValid.lazyBind { result in
+        viewModel.outputTextValid.lazyBind { [weak self] result in
+            guard let self else { return }
             guard result else {
                 let alert = UIAlertController(title: "확인 필요", message: "두 글자 이상 입력해주세요", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default))
@@ -39,7 +40,7 @@ final class SearchViewController: UIViewController {
                 return
             }
             let vc = SearchResultViewController()
-            vc.searchText = self.viewModel.inputText
+            vc.viewModel.inputTitleText.value = self.viewModel.inputText
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

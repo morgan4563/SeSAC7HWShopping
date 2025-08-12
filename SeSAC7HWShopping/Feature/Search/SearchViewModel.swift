@@ -13,7 +13,8 @@ final class SearchViewModel {
     let outputTextValid = Observable(value: false)
 
     init() {
-        searchButtonTapped.bind { _ in
+        searchButtonTapped.bind { [weak self] _ in
+            guard let self else { return }
             self.textValidation()
         }
     }
