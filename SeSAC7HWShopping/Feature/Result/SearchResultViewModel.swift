@@ -53,8 +53,19 @@ final class SearchResultViewModel {
         filterButtonClicked.bind { [weak self] _ in
             guard let self else { return }
             self.resetViewData()
-            self.callRequest(query: outputTitleText.value, sort: sortKeyword)
-            //sortKeyword 외부에서 실행전 받아야함
+
+            let sort: String
+            switch sortKeyword {
+            case "날짜순":
+                sort = "date"
+            case "가격높은순":
+                sort = "dsc"
+            case "가격낮은순":
+                sort = "asc"
+            default:
+                sort = "sim"
+            }
+            self.callRequest(query: outputTitleText.value, sort: sort)
         }
     }
 

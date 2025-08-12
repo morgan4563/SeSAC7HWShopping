@@ -80,18 +80,8 @@ class SearchResultViewController: UIViewController {
 
     @objc func filterButtonClicked(_ sender: UIButton) {
         guard let title = sender.currentTitle else { return }
-        let sort: String
-        switch title {
-        case "날짜순":
-            sort = "date"
-        case "가격높은순":
-            sort = "dsc"
-        case "가격낮은순":
-            sort = "asc"
-        default:
-            sort = "sim"
-        }
-        viewModel.sortKeyword = sort
+
+        viewModel.sortKeyword = title
         viewModel.filterButtonClicked.value = ()
     }
 }
