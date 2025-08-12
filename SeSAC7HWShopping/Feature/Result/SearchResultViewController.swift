@@ -6,13 +6,12 @@
 //
 
 import UIKit
-import SnapKit
 import Kingfisher
 
 class SearchResultViewController: UIViewController {
     let searchResultView = SearchResultView()
 
-    var searchText: String = ""
+    var searchText: String? = ""
     var list: SearchItem = SearchItem(total: 0, start: 1, items: [])
     var recommendList: SearchItem = SearchItem(total: 0, start: 1, items: [])
     var start = 1

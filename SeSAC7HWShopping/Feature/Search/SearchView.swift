@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class SearchView: BaseView {
+final class SearchView: BaseView {
     let searchBar = UISearchBar()
     let mainContainerView = UIView()
     let titleStackView = UIStackView()
@@ -52,7 +52,6 @@ class SearchView: BaseView {
     override func configureView() {
         backgroundColor = .systemBackground
         mainContainerView.backgroundColor = .systemBackground
-
 
         searchBar.placeholder = "브랜드, 상품, 프로필, 태그 등"
         searchBar.searchBarStyle = .minimal

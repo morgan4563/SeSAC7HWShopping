@@ -6,9 +6,10 @@
 //
 
 import UIKit
-import SnapKit
 
-class SearchViewController: UIViewController {
+final class SearchViewController: UIViewController {
+    let viewModel = SearchViewModel()
+
 	let searchView = SearchView()
 
     override func loadView() {
@@ -19,27 +20,34 @@ class SearchViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
+        bind()
     }
 
     private func setupUI() {
         navigationController?.navigationBar.tintColor = .label
-        title = "영캠러의 쇼핑쇼핑"
+        navigationItem.title = "영캠러의 쇼핑쇼핑"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         searchView.searchBar.delegate = self
+    }
+
+    private func bind() {
+        viewModel.outputTextValid.lazyBind { result in
+            guard result else {
+                let alert = UIAlertController(title: "확인 필요", message: "두 글자 이상 입력해주세요", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "확인", style: .default))
+                self.present(alert, animated: true)
+                return
+            }
+            let vc = SearchResultViewController()
+            vc.searchText = self.viewModel.inputText
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let text = searchBar.text, text.count >= 2 else {
-            let alert = UIAlertController(title: "확인 필요", message: "두 글자 이상 입력해주세요", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true)
-            return
-        }
-
-        let vc = SearchResultViewController()
-        vc.searchText = text
-        navigationController?.pushViewController(vc, animated: true)
+        viewModel.inputText = searchBar.text
+        viewModel.searchButtonTapped.value = ()
     }
 }
