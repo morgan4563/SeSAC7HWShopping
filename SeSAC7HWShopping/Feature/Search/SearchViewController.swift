@@ -40,8 +40,11 @@ final class SearchViewController: UIViewController {
                 return
             }
             let vc = SearchResultViewController()
+            print("check1 nextVC 생성됨")
             vc.viewModel.inputTitleText.value = self.viewModel.inputText
+			print("check2 nextVC에 인풋(검색용)에 검색어 값넣음")
             self.navigationController?.pushViewController(vc, animated: true)
+            print("check3 화면전환 이후")
         }
     }
 }

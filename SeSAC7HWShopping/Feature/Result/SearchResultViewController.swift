@@ -27,13 +27,16 @@ class SearchResultViewController: UIViewController {
                 button.addTarget(self, action: #selector(filterButtonClicked(_:)), for: .touchUpInside)
             }
         }
+        print("check4 nextVC 뷰디드로드댐")
     }
 
     private func bind() {
         viewModel.outputTitleText.bind { [weak self] _ in
             guard let self else { return }
             self.navigationItem.title = self.viewModel.outputTitleText.value
+            guard !self.viewModel.outputTitleText.value.isEmpty else { return }
             self.viewModel.searchTrigger.value = ()
+            print("check5 아웃풋 바인딩")
         }
 
         viewModel.outputSearchCountText.bind { [weak self] _ in
@@ -54,7 +57,7 @@ class SearchResultViewController: UIViewController {
                 self.navigationController?.popViewController(animated: true)
             }
             alert.addAction(confirm)
-//            present(alert, animated: true)
+            present(alert, animated: true)
         }
 
         viewModel.list.bind { [weak self] _ in

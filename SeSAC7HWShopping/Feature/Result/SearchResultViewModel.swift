@@ -14,7 +14,7 @@ final class SearchResultViewModel {
     // 정렬버튼 클릭했을때
     let filterButtonClicked = Observable(value: ())
     // 검색 시도됐을때
-    let searchTrigger = Observable(value: ())
+    let searchTrigger: Observable<Void?> = Observable(value: ())
     //에러 메시지 발생
     let errorPresent: Observable<String?> = Observable(value: nil)
 
@@ -31,26 +31,27 @@ final class SearchResultViewModel {
     // 추천검색어 리스트, 페이지 리로드
     let recommendList = Observable(value: SearchItem(total: 0, start: 1, items: []))
 
-
     var start = 1
     var sortKeyword = "sim"
 	var displayCountString = "100"
     var isEnd = false
 
     init() {
-        inputTitleText.bind { [weak self] _ in
+        inputTitleText.lazyBind { [weak self] _ in
             guard let self else { return }
+            print("check6 인풋이 들어왔을때.")
             self.setTitle()
         }
 
-        searchTrigger.bind { [weak self] _ in
+        searchTrigger.lazyBind { [weak self] _ in
             guard let self else { return }
+            guard !outputTitleText.value.isEmpty else { return }
+            print(outputTitleText.value)
             print("서치 1")
-            self.resetViewData()
-            self.callRequest(query: outputTitleText.value)
+            self.callRequest(query: outputTitleText.value, sort: "sim")
         }
 
-        filterButtonClicked.bind { [weak self] _ in
+        filterButtonClicked.lazyBind { [weak self] _ in
             guard let self else { return }
             self.resetViewData()
 
@@ -74,7 +75,7 @@ final class SearchResultViewModel {
         outputTitleText.value = text
     }
 
-    private func callRequest(query: String, sort: String = "sim") {
+    private func callRequest(query: String, sort: String) {
         if start > 1000 {
             isEnd = true
         }

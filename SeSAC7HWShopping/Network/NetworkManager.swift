@@ -16,7 +16,7 @@ class NetworkManager {
     static let shared = NetworkManager()
     private init() {}
 
-    func callRequest(query: String, display: String = "30", sort: String = "sim", start: Int = 1, completion: @escaping (Result<SearchItem, Error>) -> Void) {
+    func callRequest(query: String, display: String = "100", sort: String = "sim", start: Int = 1, completion: @escaping (Result<SearchItem, Error>) -> Void) {
 
         let url = "https://openapi.naver.com/v1/search/shop.json"
 
@@ -35,13 +35,14 @@ class NetworkManager {
         AF.request(url, method: .get, parameters: parameters, headers: header)
             .validate(statusCode: 200..<300)
             .responseDecodable(of: SearchItem.self) { response in
+                print("파라미터", parameters)
                 switch response.result {
                 case .success(let value):
                     completion(.success(value))
 
                 case .failure(let afError):
                     let statusCode = response.response?.statusCode ?? 0
-
+					print("네트워크 메니저 에러", statusCode)
                     // try? 처리필요
                     if (400..<500).contains(statusCode),
                        let data = response.data,
