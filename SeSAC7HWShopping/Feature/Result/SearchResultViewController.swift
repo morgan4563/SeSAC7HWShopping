@@ -27,29 +27,27 @@ class SearchResultViewController: UIViewController {
                 button.addTarget(self, action: #selector(filterButtonClicked(_:)), for: .touchUpInside)
             }
         }
-        print("check4 nextVC 뷰디드로드댐")
     }
 
     private func bind() {
-        viewModel.outputTitleText.bind { [weak self] _ in
+        viewModel.output.titleText.bind { [weak self] _ in
             guard let self else { return }
-            self.navigationItem.title = self.viewModel.outputTitleText.value
-            guard !self.viewModel.outputTitleText.value.isEmpty else { return }
-            self.viewModel.searchTrigger.value = ()
-            print("check5 아웃풋 바인딩")
+            self.navigationItem.title = self.viewModel.output.titleText.value
+            guard !self.viewModel.output.titleText.value.isEmpty else { return }
+            self.viewModel.input.searchTrigger.value = ()
         }
 
-        viewModel.outputSearchCountText.bind { [weak self] _ in
+        viewModel.output.searchCountText.bind { [weak self] _ in
             guard let self else { return }
-            searchResultView.searchResultCountLabel.text = viewModel.outputSearchCountText.value
+            searchResultView.searchResultCountLabel.text = viewModel.output.searchCountText.value
         }
 
-        viewModel.loading.lazyBind { [weak self] _ in
+        viewModel.output.loading.lazyBind { [weak self] _ in
             guard let self else { return }
             searchResultView.searchItemCollection.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
         }
 
-        viewModel.errorPresent.lazyBind { [weak self] message in
+        viewModel.output.errorPresent.lazyBind { [weak self] message in
             guard let self else { return }
             guard let message, !message.isEmpty else { return }
             let alert = UIAlertController(title: "네트워크 에러", message: message, preferredStyle: .alert)
@@ -60,12 +58,12 @@ class SearchResultViewController: UIViewController {
             present(alert, animated: true)
         }
 
-        viewModel.list.bind { [weak self] _ in
+        viewModel.output.list.bind { [weak self] _ in
             guard let self else { return }
             searchResultView.searchItemCollection.reloadData()
         }
 
-        viewModel.recommendList.bind { [weak self] _ in
+        viewModel.output.recommendList.bind { [weak self] _ in
             guard let self else { return }
             searchResultView.searchRecommendCollection.reloadData()
         }
@@ -85,16 +83,16 @@ class SearchResultViewController: UIViewController {
         guard let title = sender.currentTitle else { return }
 
         viewModel.sortKeyword = title
-        viewModel.filterButtonClicked.value = ()
+        viewModel.input.filterButtonClicked.value = ()
     }
 }
 
 extension SearchResultViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == searchResultView.searchItemCollection {
-            return viewModel.list.value.items.count
+            return viewModel.output.list.value.items.count
         } else {
-            return viewModel.recommendList.value.items.count
+            return viewModel.output.recommendList.value.items.count
         }
     }
 
@@ -104,7 +102,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
                 return UICollectionViewCell()
             }
 
-            let item = viewModel.list.value.items[indexPath.item]
+            let item = viewModel.output.list.value.items[indexPath.item]
             if let imageURL = URL(string: item.image) {
                 cell.imageView.kf.setImage(with: imageURL)
             }
@@ -124,7 +122,7 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
                 return UICollectionViewCell()
             }
 
-            let item = viewModel.recommendList.value.items[indexPath.item]
+            let item = viewModel.output.recommendList.value.items[indexPath.item]
             if let imageURL = URL(string: item.image) {
                 cell.imageView.kf.setImage(with: imageURL)
             }
@@ -135,8 +133,8 @@ extension SearchResultViewController: UICollectionViewDelegate, UICollectionView
 
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if viewModel.isEnd == false && indexPath.item == viewModel.list.value.items.count - 3 {
-            viewModel.start += Int(viewModel.displayCountString)!
+        if viewModel.isEnd == false && indexPath.item == viewModel.output.list.value.items.count - 3 {
+            viewModel.start += Int("100")!
         }
     }
 }
