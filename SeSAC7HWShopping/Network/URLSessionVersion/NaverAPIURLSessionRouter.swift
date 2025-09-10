@@ -29,7 +29,7 @@ enum NaverAPIURLSessionRouter {
     }
     var path: String {
         // 추후 붙을 거 필요하면 주자
-        return ""
+        return "/v1/search/shop.json"
     }
 
 //    var endpoint: URL {

@@ -79,11 +79,11 @@ final class SearchResultViewModel {
     private func callRequest(query: String, sort: String) {
         if start > 1000 { isEnd = true }
         if isEnd { return }
-
-        let router = NaverAPIRouter.searchResult(query: query, display: "100", sort: sort, start: "\(start)")
-        NetworkManager.shared.callRequest(api: router, type: SearchItem.self) { [weak self] result in
+        #warning("여기서 세션통신으로 변경해봄")
+        let router = NaverAPIURLSessionRouter.searchResult(query: query, display: "100", sort: sort, start: "\(start)")
+        NetworkManagerURLSession.shared.callRequest(api: router, type: SearchItem.self) { [weak self] result in
             guard let self else { return }
-
+			print("뭐가문제 \(result)")
             switch result {
             case .success(let value):
                 output.searchCountText.value = "\(value.total.formatted()) 개의 검색 결과"

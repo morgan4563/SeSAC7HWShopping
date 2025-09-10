@@ -40,9 +40,9 @@ final class NetworkManagerURLSession {
         request.httpMethod = api.method.rawValue
 
         //헤더 주입
-        var headers = api.headers
+        let headers = api.headers
         headers.forEach { key, value in
-            request.addValue(key, forHTTPHeaderField: value)
+            request.addValue(value, forHTTPHeaderField: key)
         }
 
         //요청 시간 주입
@@ -80,7 +80,7 @@ final class NetworkManagerURLSession {
                     if let data = data {
                         do {
                             let result = try JSONDecoder().decode(NaverError.self, from: data)
-                            completion(.failure(NaverError(errorMessage: result.errorMessage, errorCode: result.errorCode) as! Error))
+                            completion(.failure(NaverError(errorMessage: result.errorMessage, errorCode: result.errorCode)))
                         } catch {
                             print("에러타입 디코딩 오류가 발생했다.")
                             completion(.failure(NetworkError.decoding))
